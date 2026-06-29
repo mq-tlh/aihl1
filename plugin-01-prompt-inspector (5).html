@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prompt Inspector — MQ Heritage Language AI Course</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --mq-red: #A6192E; --mq-red-deep: #76232F; --mq-sand: #EDEBE5;
+  --mq-purple: #80225F; --mq-charcoal: #373A36;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: #f0ede7;
+  min-height: 100vh;
+  margin: 0;
+  padding: 32px 16px 48px;
+  color: var(--mq-charcoal);
+}
+
+.card {
+  width: 100%;
+  max-width: 680px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10), 0 1px 2px rgba(0,0,0,0.06);
+}
+
+.hdr { background: var(--mq-red); padding: 16px 22px 14px; color: #fff; }
+.hdr-eye { font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; opacity: .78; margin-bottom: 3px; }
+.hdr-title { font-size: 19px; font-weight: 600; }
+.hdr-sub { font-size: 13px; opacity: .85; margin-top: 3px; }
+
+.prog-bar { background: var(--mq-red-deep); padding: 8px 22px; display: flex; align-items: center; gap: 12px; }
+.prog-pill { background: rgba(255,255,255,.2); color: #fff; font-size: 11.5px; font-weight: 600; padding: 2px 10px; border-radius: 20px; }
+.prog-track { flex: 1; height: 4px; background: rgba(255,255,255,.22); border-radius: 2px; overflow: hidden; }
+.prog-fill { height: 100%; background: #fff; border-radius: 2px; transition: width .4s ease; }
+.prog-label { color: rgba(255,255,255,.78); font-size: 11.5px; white-space: nowrap; }
+
+.body { padding: 18px 22px 20px; }
+
+.intro-heading { font-size: 17px; font-weight: 600; color: var(--mq-charcoal); margin-bottom: 8px; }
+.intro-lead { font-size: 14px; color: #444; line-height: 1.65; margin-bottom: 20px; }
+.how-list { list-style: none; margin-bottom: 22px; display: flex; flex-direction: column; gap: 11px; }
+.how-item { display: flex; gap: 12px; align-items: flex-start; }
+.how-num {
+  flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%;
+  background: var(--mq-red); color: #fff;
+  font-size: 12px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; margin-top: 1px;
+}
+.how-text { font-size: 14px; color: var(--mq-charcoal); line-height: 1.55; }
+.how-text strong { font-weight: 600; }
+.tip-box {
+  background: var(--mq-sand); border-radius: 10px;
+  padding: 12px 15px; font-size: 13.5px; color: var(--mq-charcoal);
+  line-height: 1.55; margin-bottom: 22px;
+  border-left: 3px solid var(--mq-purple);
+}
+.tip-box strong { font-weight: 600; color: var(--mq-purple); }
+.start-btn {
+  background: var(--mq-red); color: #fff; border: none;
+  border-radius: 8px; padding: 12px 28px; font-size: 14.5px;
+  font-weight: 600; cursor: pointer; font-family: inherit;
+  transition: background .15s;
+}
+.start-btn:hover { background: var(--mq-red-deep); }
+
+.round-chip { display: inline-block; font-size: 10.5px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; background: #fbeaec; color: var(--mq-red); padding: 3px 10px; border-radius: 20px; margin-bottom: 12px; }
+.instruct { font-size: 15px; font-weight: 500; color: var(--mq-charcoal); margin-bottom: 16px; line-height: 1.45; }
+
+.chat-mock { background: #f5f5f5; border-radius: 12px; padding: 14px 14px 10px; margin-bottom: 16px; border: 0.5px solid #e0e0e0; }
+.chat-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: .07em; color: #999; font-weight: 600; margin-bottom: 10px; }
+.bubble-row { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 8px; }
+.avatar { width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; margin-top: 1px; }
+.avatar.user { background: var(--mq-purple); color: #fff; }
+.avatar.ai { background: var(--mq-charcoal); color: #fff; }
+.bubble { border-radius: 0 10px 10px 10px; padding: 10px 13px; font-size: 13.5px; line-height: 1.6; max-width: 88%; background: #fff; border: 0.5px solid #e0e0e0; color: #222; }
+.bubble.ai-bubble { background: var(--mq-sand); border-color: #d9d6ce; color: var(--mq-charcoal); font-style: italic; font-size: 13px; }
+
+.chunk { display: inline; cursor: pointer; border-radius: 3px; padding: 1px 0; transition: background .15s; }
+.chunk:hover { background: rgba(0,0,0,.06); }
+.chunk.wrong-pick { background: rgba(214,0,28,.18); animation: wob .35s ease; }
+.chunk.fixed { background: rgba(46,125,50,.13); color: #1a4d1d; cursor: default; }
+.chunk.fixed:hover { background: rgba(46,125,50,.13); }
+@keyframes wob {
+  0%,100% { transform: translateX(0); }
+  25%      { transform: translateX(-4px); }
+  75%      { transform: translateX(4px); }
+}
+
+.hint-row { min-height: 36px; margin-bottom: 14px; }
+.hint { font-size: 13.5px; line-height: 1.55; padding: 10px 13px; border-radius: 8px; display: none; }
+.hint.bad-pick { background: #fff5f5; color: var(--mq-red-deep); border-left: 3px solid var(--mq-red); display: block; }
+.hint.good { background: #f0faf0; color: #1a4d1d; border-left: 3px solid #2e7d32; display: block; }
+.hint strong { font-weight: 600; }
+.hint .fixed-version { font-size: 12.5px; opacity: .8; margin-top: 8px; display: block; }
+
+.next-btn { background: var(--mq-red); color: #fff; border: none; border-radius: 8px; padding: 10px 20px; font-size: 13.5px; font-weight: 600; cursor: pointer; font-family: inherit; transition: background .15s; display: none; }
+.next-btn:hover { background: var(--mq-red-deep); }
+
+.results { display: none; }
+.res-hero { text-align: center; padding: 4px 0 18px; }
+.rosette { width: 88px; height: 88px; background: var(--mq-red); border-radius: 50%; margin: 0 auto 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.rosette-n { font-size: 28px; font-weight: 700; color: #fff; line-height: 1; }
+.rosette-d { font-size: 12px; color: rgba(255,255,255,.7); }
+.res-title { font-size: 19px; font-weight: 600; color: var(--mq-charcoal); margin-bottom: 6px; }
+.res-msg { font-size: 13.5px; color: #666; max-width: 380px; margin: 0 auto 18px; line-height: 1.6; }
+
+.recap { background: var(--mq-sand); border-radius: 12px; padding: 14px 16px; margin-bottom: 18px; }
+.recap-head { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .07em; color: var(--mq-purple); margin-bottom: 10px; }
+.recap-row { display: flex; gap: 10px; padding: 8px 0; border-bottom: 1px solid #d9d6ce; font-size: 13px; line-height: 1.5; align-items: flex-start; }
+.recap-row:last-child { border-bottom: none; }
+.recap-num { width: 22px; height: 22px; border-radius: 50%; background: var(--mq-purple); color: #fff; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+.recap-name { font-weight: 600; color: var(--mq-charcoal); }
+.recap-desc { font-size: 12px; color: #666; margin-top: 1px; }
+
+.btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.btn-retry { background: var(--mq-red); color: #fff; border: none; border-radius: 8px; padding: 10px 20px; font-size: 13.5px; font-weight: 600; cursor: pointer; font-family: inherit; transition: background .15s; }
+.btn-retry:hover { background: var(--mq-red-deep); }
+.back-btn { background: transparent; color: var(--mq-charcoal); border: 1.5px solid #ccc9c1; border-radius: 8px; padding: 9px 16px; font-size: 13.5px; font-weight: 500; cursor: pointer; font-family: inherit; transition: background .15s; }
+.back-btn:hover { background: var(--mq-sand); }
+.btn-secondary { background: transparent; color: var(--mq-charcoal); border: 1.5px solid #ccc9c1; border-radius: 8px; padding: 9px 16px; font-size: 13.5px; font-weight: 500; cursor: pointer; font-family: inherit; transition: background .15s; }
+.btn-secondary:hover { background: var(--mq-sand); }
+
+.attrib { font-size: 11px; color: #999; text-align: center; padding: 10px 22px 12px; border-top: 0.5px solid #e0e0e0; margin-top: 4px; }
+</style>
+</head>
+<body>
+<div class="card">
+
+  <div class="hdr">
+    <div class="hdr-eye">Module 1 · Spot the flaw</div>
+    <div class="hdr-title">Prompt Inspector 🔍</div>
+    <div class="hdr-sub">Each prompt has one problem. Tap it to fix it.</div>
+  </div>
+
+  <div class="prog-bar" id="prog-bar" style="display:none">
+    <span class="prog-pill" id="pill">0 / 4 fixed</span>
+    <div class="prog-track"><div class="prog-fill" id="pfill" style="width:0%"></div></div>
+    <span class="prog-label" id="plabel">Round 1 of 4</span>
+  </div>
+
+  <div class="body">
+
+    <div id="intro">
+      <p class="intro-heading">How to play</p>
+      <p class="intro-lead">You have just watched how a well-built prompt comes together. Now it is your turn to spot when one goes wrong.</p>
+      <ul class="how-list">
+        <li class="how-item">
+          <div class="how-num">1</div>
+          <div class="how-text">Read the prompt in the chat window carefully.</div>
+        </li>
+        <li class="how-item">
+          <div class="how-num">2</div>
+          <div class="how-text"><strong>Tap the part you think is the problem.</strong> There is exactly one flaw in each prompt.</div>
+        </li>
+        <li class="how-item">
+          <div class="how-num">3</div>
+          <div class="how-text">If you are right, you will see the fix and a simulated AI response. If not, you will get a hint and can keep trying.</div>
+        </li>
+        <li class="how-item">
+          <div class="how-num">4</div>
+          <div class="how-text">Work through all four rounds, one for each prompt element.</div>
+        </li>
+      </ul>
+      <button class="start-btn" onclick="startGame()">Start inspecting</button>
+    </div>
+
+    <div id="quiz" style="display:none">
+      <div class="round-chip" id="rchip"></div>
+      <div class="instruct" id="instruct"></div>
+      <div class="chat-mock">
+        <div class="chat-label">Prompt preview</div>
+        <div class="bubble-row">
+          <div class="avatar user">T</div>
+          <div class="bubble" id="prompt-bubble"></div>
+        </div>
+        <div class="bubble-row" id="ai-row" style="display:none">
+          <div class="avatar ai">AI</div>
+          <div class="bubble ai-bubble" id="ai-bubble"></div>
+        </div>
+      </div>
+      <div class="hint-row"><div class="hint" id="hint"></div></div>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <button class="next-btn" id="nxt">Next round</button>
+        <button class="back-btn" id="back-btn" onclick="goBack()" style="display:none">Back</button>
+      </div>
+    </div>
+
+    <div class="results" id="results">
+      <div class="res-hero">
+        <div class="rosette">
+          <div class="rosette-n" id="rn">4</div>
+          <div class="rosette-d">/ 4</div>
+        </div>
+        <div class="res-title" id="rtitle"></div>
+        <div class="res-msg" id="rmsg"></div>
+      </div>
+      <div class="recap">
+        <div class="recap-head">The four elements, fixed</div>
+        <div class="recap-row">
+          <div class="recap-num">1</div>
+          <div>
+            <div class="recap-name">Greet the AI</div>
+            <div class="recap-desc">A greeting encourages you to write conversationally, which leads to a longer, more detailed prompt. The AI mirrors your register — more detail in means more useful detail out.</div>
+          </div>
+        </div>
+        <div class="recap-row">
+          <div class="recap-num">2</div>
+          <div>
+            <div class="recap-name">Provide context</div>
+            <div class="recap-desc">Tell the AI what the resource is, who the learners are, and what you need.</div>
+          </div>
+        </div>
+        <div class="recap-row">
+          <div class="recap-num">3</div>
+          <div>
+            <div class="recap-name">Specify the output</div>
+            <div class="recap-desc">Describe the format and end use so the AI shapes its output accordingly.</div>
+          </div>
+        </div>
+        <div class="recap-row">
+          <div class="recap-num">4</div>
+          <div>
+            <div class="recap-name">Give a clear instruction</div>
+            <div class="recap-desc">Be explicit and leave no room for creative misinterpretation.</div>
+          </div>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-retry" onclick="init()">Play again</button>
+      </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="attrib">Macquarie University Teachers' Learning Hub</div>
+
+</div>
+
+<script>
+const ROUNDS = [
+  {
+    chip: 'Element 1 — greet the AI',
+    instruct: 'This teacher forgot something right at the start. Tap the part of the prompt that is the problem.',
+    attachment: '📎 flashcards (attached)',
+    chunks: [
+      { text: 'Translate the attached flashcards into Cantonese', flaw: true,
+        badMsg: 'That is the actual task, and it is fine. Look at what is missing before it.',
+        goodMsg: '<strong>Found it.</strong> Starting with a greeting encourages you to treat the interaction like a conversation, which means you are more likely to keep writing and produce a longer, more detailed prompt. This matters because the AI mirrors the register of your input — a brief, clipped prompt gets a brief, clipped response. A conversational, detailed prompt gets a fuller, more useful one.' },
+      { text: ' for my Year 5 class.', flaw: false,
+        badMsg: 'Context about the class is useful. That is not the flaw here. Keep looking.' },
+      { text: ' Keep the original layout.', flaw: false,
+        badMsg: 'A clear instruction to preserve the layout is good practice. That is not the flaw.' }
+    ],
+    fixedText: '"Hi Claude, translate the attached flashcards into Cantonese for my Year 5 class. Keep the original layout."',
+    aiReply: 'Of course! Here are the flashcards translated into Cantonese, with the original layout preserved...'
+  },
+  {
+    chip: 'Element 2 — provide context',
+    instruct: 'The prompt has a task, but something is missing that would help Claude do it well. Tap the flaw.',
+    attachment: '📎 My Neighbourhood syllabus (attached)',
+    chunks: [
+      { text: 'Hi Claude,', flaw: false,
+        badMsg: 'Greeting the AI is good. That is not the flaw here.' },
+      { text: ' can you make me some vocabulary exercises?', flaw: true,
+        badMsg: 'The request itself is reasonable, but there is something important missing around it. Who are these exercises for?',
+        goodMsg: '<strong>Spot on.</strong> "Vocabulary exercises" for whom? At what level? From which resource? Without context, Claude has to guess and it might guess wrong. A note on dialect also matters here since Arabic varies significantly by region. A strong prompt tells the AI who the learners are, what variety of the language you teach, and what you are working from.' },
+      { text: ' Please make them printable.', flaw: false,
+        badMsg: 'Specifying a printable format is useful. That is actually good practice.' }
+    ],
+    fixedText: '"Hi Claude, I am teaching beginner Egyptian Arabic to ages 10 to 12 using the NESA My Neighbourhood unit. Can you make some vocabulary matching exercises from the attached word list? Please make them printable."',
+    aiReply: 'Here are some vocabulary matching exercises for your beginner Egyptian Arabic class, based on the My Neighbourhood unit...'
+  },
+  {
+    chip: 'Element 3 — specify the output',
+    instruct: 'The teacher knows what they want to do, but has not told Claude what the result should look like. Tap the flaw.',
+    attachment: '📎 reading comprehension questions (attached)',
+    chunks: [
+      { text: 'Hi Claude, I have a set of reading comprehension questions', flaw: false,
+        badMsg: 'Describing what the resource is is useful context. That is not the flaw.' },
+      { text: ' from our textbook.', flaw: false,
+        badMsg: 'That is still context. Helpful, not broken.' },
+      { text: ' Can you translate them into Vietnamese?', flaw: true,
+        badMsg: 'Asking for a translation is the task itself. Look at what is missing around it.',
+        goodMsg: '<strong>Right.</strong> The prompt never says what the output should look like. A Word document? A table? Formatted for printing? Without specifying the output, Claude will make a choice that might not suit your classroom.' },
+      { text: ' My students are Year 7.', flaw: false,
+        badMsg: 'Year group context helps Claude pitch the language right. That is a good detail to include.' }
+    ],
+    fixedText: '"Hi Claude, I have a set of reading comprehension questions from our textbook. Can you translate them into Vietnamese and format them as a clean, printable A4 document? My students are Year 7."',
+    aiReply: 'Here are your reading comprehension questions translated into Vietnamese and formatted as a clean A4 document ready for printing...'
+  },
+  {
+    chip: 'Element 4 — clear instruction',
+    instruct: 'The prompt is too vague — it leaves room for misinterpretation. Find the problem.',
+    attachment: '📎 flashcards (attached) · 📎 My Neighbourhood syllabus (attached)',
+    chunks: [
+      { text: 'Hi Claude, I would like you to improve these flashcards', flaw: true,
+        badMsg: '"Improve" is vague, but have a look at the rest of the prompt first.',
+        goodMsg: '<strong>Yes.</strong> "Improve" is dangerously vague. Claude might rewrite the content, redesign the layout, change the vocabulary level, or all three. None of which the teacher asked for. A clear instruction like "update any outdated cultural references and fix spelling errors, but keep everything else the same" removes all ambiguity.' },
+      { text: ' I made for my Mandarin class.', flaw: false,
+        badMsg: 'Context about the class is fine. That is not where the vagueness is.' },
+      { text: ' They are based on the My Neighbourhood unit.', flaw: false,
+        badMsg: 'Curriculum context is useful. That is a good detail to include.' }
+    ],
+    fixedText: '"Hi Claude, I would like you to update any outdated cultural references in these flashcards for my Mandarin class and fix any spelling errors. Keep the layout and all other content the same. They are based on the My Neighbourhood unit."',
+    aiReply: 'I have updated the outdated cultural references and fixed the spelling errors in your flashcards. Everything else has been kept the same...'
+  }
+];
+
+let cur = 0, fixed = 0;
+var roundResults = [];
+
+function startGame() {
+  document.getElementById('intro').style.display = 'none';
+  document.getElementById('prog-bar').style.display = 'flex';
+  document.getElementById('quiz').style.display = 'block';
+}
+
+function init() {
+  cur = 0; fixed = 0; roundResults = [];
+  document.getElementById('results').style.display = 'none';
+  document.getElementById('quiz').style.display = 'none';
+  document.getElementById('prog-bar').style.display = 'none';
+  document.getElementById('intro').style.display = 'block';
+  document.getElementById('pfill').style.width = '0%';
+  document.getElementById('pill').textContent = '0 / 4 fixed';
+  document.getElementById('plabel').textContent = 'Round 1 of 4';
+}
+
+function render() {
+  const r = ROUNDS[cur];
+  document.getElementById('rchip').textContent = r.chip;
+  document.getElementById('instruct').textContent = r.instruct;
+  const bubble = document.getElementById('prompt-bubble');
+  const attachmentHtml = r.attachment
+    ? '<span style="display:block;background:#f0f0f0;border:1px solid #ccc;border-radius:5px;padding:2px 8px;font-size:11.5px;color:#555;margin-bottom:8px;width:fit-content;">' + r.attachment + '</span>'
+    : '';
+  const chunksHtml = r.chunks.map(function(c, i) {
+    return '<span class="chunk" onclick="pick(this,' + i + ')">' + c.text + '</span>';
+  }).join('');
+  bubble.innerHTML = attachmentHtml + chunksHtml;
+  document.getElementById('ai-row').style.display = 'none';
+  const hint = document.getElementById('hint');
+  hint.className = 'hint';
+  hint.innerHTML = '';
+  document.getElementById('nxt').style.display = 'none';
+  document.getElementById('back-btn').style.display = cur > 0 ? 'inline-block' : 'none';
+  updateProg();
+}
+
+function goBack() {
+  if (cur > 0) {
+    cur--;
+    roundResults.pop();
+    if (roundResults[roundResults.length - 1] && roundResults[roundResults.length - 1].fixed) fixed--;
+    render();
+  }
+}
+
+function pick(el, i) {
+  if (el.classList.contains('fixed')) return;
+  const r = ROUNDS[cur];
+  const c = r.chunks[i];
+  const hint = document.getElementById('hint');
+  if (c.flaw) {
+    el.classList.add('fixed');
+    el.textContent = '\u2713 ' + el.textContent.trim();
+    hint.className = 'hint good';
+    hint.innerHTML = c.goodMsg + '<span class="fixed-version">Fixed version: ' + r.fixedText + '</span>';
+    document.getElementById('ai-bubble').textContent = r.aiReply;
+    document.getElementById('ai-row').style.display = 'flex';
+    fixed++;
+    roundResults.push({ element: r.chip, found: true });
+    const nxt = document.getElementById('nxt');
+    nxt.style.display = 'inline-block';
+    nxt.textContent = cur < ROUNDS.length - 1 ? 'Next round' : 'See results';
+    updateProg();
+  } else {
+    el.classList.add('wrong-pick');
+    hint.className = 'hint bad-pick';
+    hint.innerHTML = c.badMsg;
+    setTimeout(function() { el.classList.remove('wrong-pick'); }, 400);
+  }
+}
+
+function updateProg() {
+  document.getElementById('pill').textContent = fixed + ' / 4 fixed';
+  document.getElementById('pfill').style.width = (fixed / 4 * 100) + '%';
+  document.getElementById('plabel').textContent = 'Round ' + Math.min(cur + 1, 4) + ' of 4';
+}
+
+document.getElementById('nxt').addEventListener('click', function() {
+  cur++;
+  if (cur >= ROUNDS.length) showResults();
+  else render();
+});
+
+function showResults() {
+  document.getElementById('quiz').style.display = 'none';
+  document.getElementById('results').style.display = 'block';
+  document.getElementById('rn').textContent = fixed;
+  document.getElementById('rtitle').textContent = fixed === 4
+    ? 'All four flaws found!'
+    : fixed >= 3 ? 'Almost there!' : 'Good start, try again';
+  document.getElementById('rmsg').textContent = fixed === 4
+    ? 'You spotted every broken element. You know what makes a prompt work.'
+    : 'Review the four elements in the recap below, then have another go. They will click quickly.';
+}
+
+render();
+</script>
+</body>
+</html>
