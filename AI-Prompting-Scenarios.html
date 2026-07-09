@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Setting AI Up for Success</title>
+<style>
+:root {
+  --mq-red: #A6192E;
+  --mq-red-deep: #76232F;
+  --mq-sand: #EDEBE5;
+  --mq-purple: #80225F;
+  --mq-charcoal: #373A36;
+}
+* { box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: #f0ede7;
+  color: var(--mq-charcoal);
+  margin: 0;
+  padding: 20px 12px;
+}
+.card {
+  max-width: 620px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.12);
+}
+.hdr {
+  background: var(--mq-red);
+  color: #fff;
+  padding: 16px 22px;
+}
+.hdr-eye {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  opacity: .9;
+  margin-bottom: 4px;
+}
+.hdr-title {
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+.prog-bar {
+  height: 6px;
+  background: var(--mq-red-deep);
+  display: none;
+}
+.prog-bar-fill {
+  height: 100%;
+  background: var(--mq-sand);
+  width: 0%;
+  transition: width .25s ease;
+}
+.body {
+  padding: 18px 22px 22px;
+}
+.screen { display: none; }
+.screen.active { display: block; }
+
+/* Scenario reading screens */
+.scenario-tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  color: var(--mq-red);
+  background: #fdf0f1;
+  border: 1px solid #f0c9cd;
+  border-radius: 20px;
+  padding: 4px 12px;
+  margin-bottom: 10px;
+}
+.scenario-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 10px;
+  color: var(--mq-charcoal);
+}
+.scenario-text {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--mq-charcoal);
+}
+.scenario-text p { margin: 0 0 12px; }
+.scenario-quote {
+  background: var(--mq-sand);
+  border-left: 3px solid var(--mq-purple);
+  padding: 10px 14px;
+  font-size: 13.5px;
+  font-style: italic;
+  border-radius: 0 8px 8px 0;
+  margin: 12px 0;
+}
+
+/* Intro */
+.intro-title {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0 0 10px;
+}
+.intro-text {
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 14px;
+}
+.intro-box {
+  background: var(--mq-sand);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+.intro-box strong { color: var(--mq-purple); }
+
+/* Question card */
+.activity-head {
+  font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .07em;
+  color: var(--mq-purple); background: #f3eaf7;
+  padding: 8px 14px; border-radius: 8px 8px 0 0;
+  border: 1px solid #d4b8e0; border-bottom: none; margin-top: 4px;
+}
+.activity-body {
+  border: 1px solid #d4b8e0; border-radius: 0 0 8px 8px; padding: 14px; background: #fff;
+}
+.q-text {
+  font-size: 14.5px;
+  font-weight: 600;
+  line-height: 1.5;
+  margin-bottom: 12px;
+  color: var(--mq-charcoal);
+}
+.opts { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+.opt {
+  background: #fff; border: 1.5px solid #ccc9c1; border-radius: 9px;
+  padding: 10px 14px; text-align: left; cursor: pointer; font-size: 13.5px;
+  line-height: 1.4; color: var(--mq-charcoal); display: flex; gap: 9px; align-items: flex-start;
+  font-family: inherit;
+}
+.opt:hover:not(:disabled) { border-color: var(--mq-red); background: #fdf5f6; }
+.opt:disabled { cursor: default; }
+.opt-badge {
+  flex: none;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--mq-sand); color: var(--mq-charcoal);
+  font-size: 11.5px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  margin-top: 1px;
+}
+.opt.correct { border-color: #2e7d32; background: #f0faf0; }
+.opt.correct .opt-badge { background: #2e7d32; color: #fff; }
+.opt.incorrect { border-color: #D6001C; background: #fff5f5; }
+.opt.incorrect .opt-badge { background: #D6001C; color: #fff; }
+
+.fb {
+  display: none; padding: 11px 13px; border-radius: 8px; border-left: 3px solid transparent;
+  font-size: 13.5px; line-height: 1.55; margin-bottom: 4px;
+}
+.fb.correct { display: block; background:#f0faf0; border-left-color:#2e7d32; color:#1a4d1d; }
+.fb.incorrect { display: block; background:#fff5f5; border-left-color:#D6001C; color:#76232F; }
+
+.btn-row-q { display: flex; gap: 10px; align-items: center; margin-top: 12px; }
+.btn-row-q .full-btn { width: auto; flex: none; margin-top: 0; }
+
+.full-btn {
+  background: var(--mq-red); color: #fff; border: none; border-radius: 8px;
+  padding: 12px 28px; font-size: 14px; font-weight: 600; cursor: pointer;
+  font-family: inherit; transition: background .15s;
+}
+.full-btn:hover { background: var(--mq-red-deep); }
+
+.back-btn-q {
+  background: transparent; color: var(--mq-red); border: 1.5px solid var(--mq-red);
+  border-radius: 8px; padding: 11px 16px; font-size: 14px; font-weight: 600;
+  cursor: pointer; font-family: inherit; transition: background .15s;
+}
+.back-btn-q:hover { background: #fdf5f6; }
+
+/* Results */
+.res-wrap { text-align: center; padding-top: 4px; }
+.rosette {
+  width: 96px; height: 96px; border-radius: 50%;
+  background: var(--mq-red); color: #fff;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  margin: 0 auto 14px; font-weight: 700;
+}
+.rosette .score-num { font-size: 26px; line-height: 1; }
+.rosette .score-total { font-size: 12px; opacity: .85; margin-top: 2px; }
+.rt {
+  font-size: 19px; font-weight: 700; margin-bottom: 6px;
+}
+.rsub {
+  font-size: 13.5px; line-height: 1.55; color: var(--mq-charcoal); margin-bottom: 18px;
+}
+.tk {
+  background: var(--mq-sand); border-radius: 10px; padding: 14px 16px; text-align: left; margin-bottom: 18px;
+}
+.tk-row { display: flex; gap: 10px; padding: 8px 0; border-bottom: 1px solid #ddd9cf; }
+.tk-row:last-child { border-bottom: none; }
+.tk-d {
+  flex: none; width: 22px; height: 22px; border-radius: 50%;
+  background: var(--mq-purple); color: #fff; font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; margin-top: 2px;
+}
+.tk-n { font-size: 13.5px; font-weight: 700; margin-bottom: 2px; color: var(--mq-charcoal); }
+.tk-s { font-size: 13px; line-height: 1.5; color: var(--mq-charcoal); }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="hdr">
+    <div class="hdr-eye">Branching scenario</div>
+    <div class="hdr-title">Setting AI Up for Success</div>
+  </div>
+  <div class="prog-bar" id="prog-bar"><div class="prog-bar-fill" id="prog-fill"></div></div>
+
+  <div class="body">
+
+    <!-- INTRO -->
+    <div class="screen active" id="s-intro">
+      <div class="intro-title">Three classrooms, three first inputs</div>
+      <div class="intro-text">You have just worked through Steps 0 and 1 of the AI Prompting Framework: considering whether a task is right for AI, then preparing a first input with enough context to get something useable back.</div>
+      <div class="intro-box">
+        <strong>Step 0, Consider your AI use:</strong> assess whether the task is appropriate for AI, and reflect on your culture and community's considerations.<br><br>
+        <strong>Step 1, Prepare your First Input:</strong> provide the facts, context, teaching style and goal the AI needs, then end with a self-check such as "please functionally decompose the task."
+      </div>
+      <div class="intro-text">You will meet three language teachers, each setting up an AI interaction. Some get it right. Some leave something out. Use the framework and the Culturally Responsive AI-Use Checklist to judge each one.</div>
+      <button class="full-btn" onclick="startActivity()">Begin</button>
+    </div>
+
+    <!-- SCENARIO 1 -->
+    <div class="screen" id="s-scenario1">
+      <div class="scenario-tag">Scenario 1 of 3</div>
+      <div class="scenario-title">The Lesson Plan</div>
+      <div class="scenario-text">
+        <p>Ms. Osei teaches Year 8 Samoan, a community language class. Her students come from a mix of families who speak Samoan at home and families who are learning it for the first time, and she is planning a unit on oral storytelling traditions.</p>
+        <p>Before opening a chat, she stops to think it through. AI could help her structure the lessons, but the stories themselves and how they are told need to come from her own knowledge and her students' families, not from the AI.</p>
+        <div class="scenario-quote">Her first message: "I'm planning a five-lesson Year 8 Samoan language unit on oral storytelling traditions. My class is a mix of heritage speakers and beginners, and I want to draw on the specific stories and dialects represented in my classroom rather than generic examples. My teaching style is discussion-based, with small group work. My goal is a five-lesson outline I can adapt. To begin, please functionally decompose the task."</div>
+      </div>
+      <button class="full-btn" onclick="goS('s-q1')">Continue</button>
+    </div>
+
+    <div class="screen" id="s-q1">
+      <div class="activity-head">Question 1 of 6</div>
+      <div class="activity-body">
+        <div class="q-text">Which part of Step 0 did Ms. Osei clearly work through before she typed anything?</div>
+        <div class="opts" id="q1-opts"></div>
+        <div class="fb" id="q1-fb"></div>
+        <div class="btn-row-q" id="q1-btnrow" style="display:none">
+          <button class="back-btn-q" onclick="goS('s-scenario1')">Back</button>
+          <button class="full-btn" onclick="goS('s-q2')">Next question</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="screen" id="s-q2">
+      <div class="activity-head">Question 2 of 6</div>
+      <div class="activity-body">
+        <div class="q-text">Ms. Osei's first input covers her year level, topic, class context, teaching style and goal. Using the Culturally Responsive Checklist, what should she still confirm before using the output with her language class?</div>
+        <div class="opts" id="q2-opts"></div>
+        <div class="fb" id="q2-fb"></div>
+        <div class="btn-row-q" id="q2-btnrow" style="display:none">
+          <button class="back-btn-q" onclick="goS('s-q1')">Back</button>
+          <button class="full-btn" onclick="goS('s-scenario2')">Continue to Scenario 2</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCENARIO 2 -->
+    <div class="screen" id="s-scenario2">
+      <div class="scenario-tag">Scenario 2 of 3</div>
+      <div class="scenario-title">The Quiz Generator</div>
+      <div class="scenario-text">
+        <p>Mr. Farid teaches Year 8 French. He wants a quick vocabulary quiz for tomorrow's lesson and opens a chat window.</p>
+        <div class="scenario-quote">His first message: "Make me a 10 question French vocab quiz for year 8."</div>
+        <p>He is about to hit send.</p>
+      </div>
+      <button class="full-btn" onclick="goS('s-q3')">Continue</button>
+    </div>
+
+    <div class="screen" id="s-q3">
+      <div class="activity-head">Question 3 of 6</div>
+      <div class="activity-body">
+        <div class="q-text">What should Mr. Farid do before sending this prompt?</div>
+        <div class="opts" id="q3-opts"></div>
+        <div class="fb" id="q3-fb"></div>
+        <div class="btn-row-q" id="q3-btnrow" style="display:none">
+          <button class="back-btn-q" onclick="goS('s-scenario2')">Back</button>
+          <button class="full-btn" onclick="goS('s-q4')">Next question</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="screen" id="s-q4">
+      <div class="activity-head">Question 4 of 6</div>
+      <div class="activity-body">
+        <div class="q-text">Mr. Farid rewrites his prompt with the topics already covered, the format he wants, and a self-check question. The AI returns a quiz. What's the most effective next step before he uses it with students?</div>
+        <div class="opts" id="q4-opts"></div>
+        <div class="fb" id="q4-fb"></div>
+        <div class="btn-row-q" id="q4-btnrow" style="display:none">
+          <button class="back-btn-q" onclick="goS('s-q3')">Back</button>
+          <button class="full-btn" onclick="goS('s-scenario3')">Continue to Scenario 3</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCENARIO 3 -->
+    <div class="screen" id="s-scenario3">
+      <div class="scenario-tag">Scenario 3 of 3</div>
+      <div class="scenario-title">The Parent Letter</div>
+      <div class="scenario-text">
+        <p>Mrs. Dlamini coordinates the Languages and Culture program at a primary school with a linguistically diverse community. She wants to write a letter home about an upcoming Languages Day, where classes will share songs, stories and words from the languages spoken at home.</p>
+        <p>She decides AI can help her draft the general structure and tone, but the specific languages and traditions represented need to come from her own knowledge of the families involved, not the AI's.</p>
+        <div class="scenario-quote">Her first message: "I'm writing a letter home to parents about our upcoming Languages Day. It should be warm and inclusive in tone, mention the date, and explain what families can expect on the day. I'll add the specific languages and cultural details myself. To begin, please functionally decompose the task."</div>
+      </div>
+      <button class="full-btn" onclick="goS('s-q5')">Continue</button>
+    </div>
+
+    <div class="screen" id="s-q5">
+      <div class="activity-head">Question 5 of 6</div>
+      <div class="activity-body">
+        <div class="q-text">Mrs. Dlamini decided AI could help with structure and tone, but not with the specific languages and cultural details. Which part of Step 0 is she directly applying here?</div>
+        <div class="opts" id="q5-opts"></div>
+        <div class="fb" id="q5-fb"></div>
+        <div class="btn-row-q" id="q5-btnrow" style="display:none">
+          <button class="back-btn-q" onclick="goS('s-scenario3')">Back</button>
+          <button class="full-btn" onclick="goS('s-q6')">Next question</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="screen" id="s-q6">
+      <div class="activity-head">Question 6 of 6</div>
+      <div class="activity-body">
+        <div class="q-text">The AI has drafted the letter's structure and tone. The specific languages and cultural details still need to be added. What should Mrs. Dlamini do next?</div>
+        <div class="opts" id="q6-opts"></div>
+        <div class="fb" id="q6-fb"></div>
+        <div class="btn-row-q" id="q6-btnrow" style="display:none">
+          <button class="back-btn-q" onclick="goS('s-q5')">Back</button>
+          <button class="full-btn" onclick="goS('s-results')">See results</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div class="screen" id="s-results">
+      <div class="res-wrap">
+        <div class="rosette">
+          <div class="score-num" id="res-score">0</div>
+          <div class="score-total">out of 6</div>
+        </div>
+        <div class="rt" id="res-title">Nice work</div>
+        <div class="rsub" id="res-sub">Here's what each scenario was really testing.</div>
+        <div class="tk" id="res-tk"></div>
+        <button class="full-btn" onclick="restart()">Play again</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+const badgeLetters = ['A','B','C','D'];
+
+const QUESTIONS = {
+  q1: {
+    options: [
+      { text: "She checked whether her students' community would support AI being used for this topic, before writing any prompt", correct: true, fb: "Exactly. She paused at Step 0 to think about whether the task suited AI and whether her community would be comfortable with it, before typing a single word." },
+      { text: "She let the AI choose which storytelling traditions to include", correct: false, fb: "Not quite. She kept that decision for herself. The AI was only asked to help structure the lessons." },
+      { text: "She skipped straight to asking for a complete finished unit", correct: false, fb: "Not quite. She started with a self-check request rather than asking for a finished product outright." },
+      { text: "She asked the AI to decide her teaching goals for her", correct: false, fb: "Not quite. Her goal, a five-lesson outline, was hers to set. She stated it clearly in her first input." }
+    ]
+  },
+  q2: {
+    options: [
+      { text: "Whether the plan aligns with her curriculum requirements", correct: true, fb: "Right. A strong first input covers facts and context, but the checklist reminds us to confirm curriculum alignment separately, before the plan goes in front of students." },
+      { text: "Whether the AI enjoyed writing about the topic", correct: false, fb: "Not quite. That isn't something the checklist asks about." },
+      { text: "Whether the AI's spelling is correct", correct: false, fb: "Not quite. Spelling is worth a glance, but it isn't the checklist item her prompt is missing." },
+      { text: "Whether the lesson plan is long enough", correct: false, fb: "Not quite. Length isn't the gap here. Curriculum alignment is." }
+    ]
+  },
+  q3: {
+    options: [
+      { text: "Send it as is, it's just a vocab quiz", correct: false, fb: "Not quite. A short prompt like this skips Step 1 entirely. The AI has no idea which vocabulary the class has already covered, so it may set words that are too easy, too hard, or not yet taught." },
+      { text: "Pause and add the topics covered so far, the format he wants, and end with a self-check question", correct: true, fb: "Exactly. Adding what's already been taught, the format, and a self-check like \"please functionally decompose the task\" gives the AI what it needs, rather than leaving Mr. Farid to rewrite the quiz from scratch." }
+    ]
+  },
+  q4: {
+    options: [
+      { text: "Review the questions against what has actually been taught, since the AI is missing that specific classroom context", correct: true, fb: "Right. The checklist asks whether output is contextually appropriate for your learners. The AI can draft a fast first pass, but it's missing the specific lessons this class has covered, so a quick review still matters before printing." },
+      { text: "Print it straight away, the AI already knows French vocabulary", correct: false, fb: "Not quite. Knowing French vocabulary in general isn't the same as knowing this class's lesson history. That context still needs a human check." },
+      { text: "Ask the AI whether it's confident the quiz is correct", correct: false, fb: "Not quite. The AI's confidence isn't a substitute for Mr. Farid checking the content against his own students." },
+      { text: "Add a title page and move on", correct: false, fb: "Not quite. Formatting isn't the gap here, content review is." }
+    ]
+  },
+  q5: {
+    options: [
+      { text: "Assessing whether the task is appropriate for AI, and deciding which parts need her own judgement", correct: true, fb: "Exactly. Step 0 isn't just a yes or no. It's also about deciding which parts of a task suit AI and which parts need her own knowledge and cultural judgement." },
+      { text: "Reviewing her final output for tone", correct: false, fb: "Not quite. That's a later step. This decision happened before she wrote her first input." },
+      { text: "Preparing her first input with full context", correct: false, fb: "Not quite. This decision, about what AI should and shouldn't handle, comes before Step 1, not during it." },
+      { text: "Saving her prompts to share with colleagues", correct: false, fb: "Not quite. That's part of documenting her process later, not this decision." }
+    ]
+  },
+  q6: {
+    options: [
+      { text: "Ask the AI to fill in the languages and cultural details itself, to save time", correct: false, fb: "Not quite. The checklist asks whether input reflects authentic cultural contexts. An AI filling in details about specific languages, families and traditions it doesn't actually know risks getting them wrong or generic." },
+      { text: "Add the languages and cultural details herself once the AI has drafted the general structure", correct: true, fb: "Right. Using AI for structure and tone, then adding the specific languages and cultural details herself, keeps the authentic knowledge where it belongs, with her." }
+    ]
+  }
+};
+
+let answered = { q1:false, q2:false, q3:false, q4:false, q5:false, q6:false };
+let score = 0;
+
+const PROGRESS = {
+  's-scenario1': 8, 's-q1': 16, 's-q2': 25,
+  's-scenario2': 33, 's-q3': 41, 's-q4': 50,
+  's-scenario3': 58, 's-q5': 66, 's-q6': 75,
+  's-results': 100
+};
+
+function goS(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (id === 's-intro') {
+    document.getElementById('prog-bar').style.display = 'none';
+  } else {
+    document.getElementById('prog-bar').style.display = 'block';
+    document.getElementById('prog-fill').style.width = (PROGRESS[id] || 0) + '%';
+  }
+  if (id === 's-results') renderResults();
+  window.scrollTo(0, 0);
+}
+
+function startActivity() {
+  goS('s-scenario1');
+}
+
+function renderQuestion(qKey) {
+  const data = QUESTIONS[qKey];
+  const opts = shuffle(data.options.slice());
+  const container = document.getElementById(qKey + '-opts');
+  container.innerHTML = '';
+  const fb = document.getElementById(qKey + '-fb');
+  fb.className = 'fb';
+  fb.textContent = '';
+  document.getElementById(qKey + '-btnrow').style.display = 'none';
+
+  opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt';
+    btn.innerHTML = '<span class="opt-badge">' + badgeLetters[i] + '</span><span>' + opt.text + '</span>';
+    btn.onclick = function () { selectOption(qKey, opt, btn, container); };
+    container.appendChild(btn);
+  });
+}
+
+function selectOption(qKey, opt, btnEl, container) {
+  if (answered[qKey]) return;
+  answered[qKey] = true;
+
+  container.querySelectorAll('.opt').forEach(b => {
+    b.disabled = true;
+    b.style.pointerEvents = 'none';
+  });
+  btnEl.classList.add(opt.correct ? 'correct' : 'incorrect');
+
+  const fb = document.getElementById(qKey + '-fb');
+  fb.className = 'fb ' + (opt.correct ? 'correct' : 'incorrect');
+  fb.innerHTML = opt.fb.replace(/^([^.]+\.)/, '<strong>$1</strong>');
+
+  if (opt.correct) score++;
+
+  document.getElementById(qKey + '-btnrow').style.display = 'flex';
+}
+
+function renderResults() {
+  document.getElementById('res-score').textContent = score;
+  const title = document.getElementById('res-title');
+  const sub = document.getElementById('res-sub');
+  if (score === 6) {
+    title.textContent = 'Sharp eye across all three scenarios';
+    sub.textContent = 'You caught what each teacher got right and where the gaps were, using both the framework and the checklist.';
+  } else if (score >= 4) {
+    title.textContent = 'Good instincts, a few gaps to tighten up';
+    sub.textContent = 'You picked up most of the key moves. Have a look at the scenarios below where the framework or checklist pointed somewhere else.';
+  } else {
+    title.textContent = 'Worth another look at Steps 0 and 1';
+    sub.textContent = 'These scenarios turn on small but important details. Revisit the takeaways below, then try the scenarios again.';
+  }
+
+  const takeaways = [
+    { n: 'Step 0 comes before the prompt', s: 'Checking whether a task suits AI, and whether your community would support it, happens before you type anything.' },
+    { n: 'Curriculum alignment is a separate check', s: 'A first input can be rich in context and still need a curriculum alignment check from the checklist.' },
+    { n: 'Short prompts skip Step 1', s: 'Without topics covered, format and a self-check, the AI is guessing at what your class actually needs.' },
+    { n: 'Context still needs a human review', s: 'AI can draft quickly, but it does not know your students\' specific lesson history, so a review against real context matters.' },
+    { n: 'Step 0 decides what AI should not touch', s: 'Deciding which parts of a task need your own judgement and cultural knowledge is part of Step 0, not an afterthought.' },
+    { n: 'Authentic cultural detail stays with you', s: 'AI can draft structure and tone, but specific cultural knowledge about real families and traditions belongs with the teacher.' }
+  ];
+
+  const tk = document.getElementById('res-tk');
+  tk.innerHTML = '';
+  takeaways.forEach((t, i) => {
+    const row = document.createElement('div');
+    row.className = 'tk-row';
+    row.innerHTML = '<div class="tk-d">' + (i + 1) + '</div><div><div class="tk-n">' + t.n + '</div><div class="tk-s">' + t.s + '</div></div>';
+    tk.appendChild(row);
+  });
+}
+
+function restart() {
+  score = 0;
+  answered = { q1:false, q2:false, q3:false, q4:false, q5:false, q6:false };
+  ['q1','q2','q3','q4','q5','q6'].forEach(renderQuestion);
+  goS('s-intro');
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  ['q1','q2','q3','q4','q5','q6'].forEach(renderQuestion);
+});
+</script>
+
+</body>
+</html>
