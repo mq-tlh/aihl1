@@ -134,9 +134,9 @@ body {
 <div class="card">
 
   <div class="hdr">
-    <div class="hdr-eye">Spot the flaw</div>
+    <div class="hdr-eye">Spot the mistake</div>
     <div class="hdr-title">Prompt Inspector 🔍</div>
-    <div class="hdr-sub">Each prompt has one problem. Tap it to fix it.</div>
+    <div class="hdr-sub">Each prompt below contains exactly one mistake. Click directly on it to fix it.</div>
   </div>
 
   <div class="prog-bar" id="prog-bar" style="display:none">
@@ -157,7 +157,7 @@ body {
         </li>
         <li class="how-item">
           <div class="how-num">2</div>
-          <div class="how-text"><strong>Tap the part you think is the problem.</strong> There is exactly one flaw in each prompt.</div>
+          <div class="how-text"><strong>Click the specific word or phrase in the prompt that you believe is the mistake.</strong> Each prompt is broken into clickable segments, and exactly one segment contains a mistake.</div>
         </li>
         <li class="how-item">
           <div class="how-num">3</div>
@@ -248,7 +248,7 @@ body {
 const ROUNDS = [
   {
     chip: 'Element 1 — greet the AI',
-    instruct: 'This teacher forgot something right at the start. Tap the part of the prompt that is the problem.',
+    instruct: 'This teacher forgot something right at the start. Click the word or phrase in the prompt below that is the mistake.',
     attachment: '📎 flashcards (attached)',
     chunks: [
       { text: 'Translate the attached flashcards into Cantonese', flaw: true,
@@ -259,57 +259,57 @@ const ROUNDS = [
       { text: ' Keep the original layout.', flaw: false,
         badMsg: 'A clear instruction to preserve the layout is good practice. That is not the flaw.' }
     ],
-    fixedText: '"Hi Claude, translate the attached flashcards into Cantonese for my Year 5 class. Keep the original layout."',
+    fixedText: '"Hi there, translate the attached flashcards into Cantonese for my Year 5 class. Keep the original layout."',
     aiReply: 'Of course! Here are the flashcards translated into Cantonese, with the original layout preserved...'
   },
   {
     chip: 'Element 2 — provide context',
-    instruct: 'The prompt has a task, but something is missing that would help Claude do it well. Tap the flaw.',
+    instruct: 'The prompt has a task, but something is missing that would help the AI do it well. Click the word or phrase in the prompt below that is the mistake.',
     attachment: '📎 My Neighbourhood syllabus (attached)',
     chunks: [
-      { text: 'Hi Claude,', flaw: false,
+      { text: 'Hi there,', flaw: false,
         badMsg: 'Greeting the AI is good. That is not the flaw here.' },
       { text: ' can you make me some vocabulary exercises?', flaw: true,
         badMsg: 'The request itself is reasonable, but there is something important missing around it. Who are these exercises for?',
-        goodMsg: '<strong>Spot on.</strong> "Vocabulary exercises" for whom? At what level? From which resource? Without context, Claude has to guess and it might guess wrong. A note on dialect also matters here since Arabic varies significantly by region. A strong prompt tells the AI who the learners are, what variety of the language you teach, and what you are working from.' },
+        goodMsg: '<strong>Spot on.</strong> "Vocabulary exercises" for whom? At what level? From which resource? Without context, the AI has to guess and it might guess wrong. A note on dialect also matters here since Arabic varies significantly by region. A strong prompt tells the AI who the learners are, what variety of the language you teach, and what you are working from.' },
       { text: ' Please make them printable.', flaw: false,
         badMsg: 'Specifying a printable format is useful. That is actually good practice.' }
     ],
-    fixedText: '"Hi Claude, I am teaching beginner Egyptian Arabic to ages 10 to 12 using the NESA My Neighbourhood unit. Can you make some vocabulary matching exercises from the attached word list? Please make them printable."',
+    fixedText: '"Hi there, I am teaching beginner Egyptian Arabic to ages 10 to 12 using the NESA My Neighbourhood unit. Can you make some vocabulary matching exercises from the attached word list? Please make them printable."',
     aiReply: 'Here are some vocabulary matching exercises for your beginner Egyptian Arabic class, based on the My Neighbourhood unit...'
   },
   {
     chip: 'Element 3 — specify the output',
-    instruct: 'The teacher knows what they want to do, but has not told Claude what the result should look like. Tap the flaw.',
+    instruct: 'The teacher knows what they want to do, but has not told the AI what the result should look like. Click the word or phrase in the prompt below that is the mistake.',
     attachment: '📎 reading comprehension questions (attached)',
     chunks: [
-      { text: 'Hi Claude, I have a set of reading comprehension questions', flaw: false,
+      { text: 'Hi there, I have a set of reading comprehension questions', flaw: false,
         badMsg: 'Describing what the resource is is useful context. That is not the flaw.' },
       { text: ' from our textbook.', flaw: false,
         badMsg: 'That is still context. Helpful, not broken.' },
       { text: ' Can you translate them into Vietnamese?', flaw: true,
         badMsg: 'Asking for a translation is the task itself. Look at what is missing around it.',
-        goodMsg: '<strong>Right.</strong> The prompt never says what the output should look like. A Word document? A table? Formatted for printing? Without specifying the output, Claude will make a choice that might not suit your classroom.' },
+        goodMsg: '<strong>Right.</strong> The prompt never says what the output should look like. A Word document? A table? Formatted for printing? Without specifying the output, the AI will make a choice that might not suit your classroom.' },
       { text: ' My students are Year 7.', flaw: false,
-        badMsg: 'Year group context helps Claude pitch the language right. That is a good detail to include.' }
+        badMsg: 'Year group context helps the AI pitch the language right. That is a good detail to include.' }
     ],
-    fixedText: '"Hi Claude, I have a set of reading comprehension questions from our textbook. Can you translate them into Vietnamese and format them as a clean, printable A4 document? My students are Year 7."',
+    fixedText: '"Hi there, I have a set of reading comprehension questions from our textbook. Can you translate them into Vietnamese and format them as a clean, printable A4 document? My students are Year 7."',
     aiReply: 'Here are your reading comprehension questions translated into Vietnamese and formatted as a clean A4 document ready for printing...'
   },
   {
     chip: 'Element 4 — clear instruction',
-    instruct: 'The prompt is too vague — it leaves room for misinterpretation. Find the problem.',
+    instruct: 'The prompt is too vague — it leaves room for misinterpretation. Click the word or phrase in the prompt below that is the mistake.',
     attachment: '📎 flashcards (attached) · 📎 My Neighbourhood syllabus (attached)',
     chunks: [
-      { text: 'Hi Claude, I would like you to improve these flashcards', flaw: true,
+      { text: 'Hi there, I would like you to improve these flashcards', flaw: true,
         badMsg: '"Improve" is vague, but have a look at the rest of the prompt first.',
-        goodMsg: '<strong>Yes.</strong> "Improve" is dangerously vague. Claude might rewrite the content, redesign the layout, change the vocabulary level, or all three. None of which the teacher asked for. A clear instruction like "update any outdated cultural references and fix spelling errors, but keep everything else the same" removes all ambiguity.' },
+        goodMsg: '<strong>Yes.</strong> "Improve" is dangerously vague. The AI might rewrite the content, redesign the layout, change the vocabulary level, or all three. None of which the teacher asked for. A clear instruction like "update any outdated cultural references and fix spelling errors, but keep everything else the same" removes all ambiguity.' },
       { text: ' I made for my Mandarin class.', flaw: false,
         badMsg: 'Context about the class is fine. That is not where the vagueness is.' },
       { text: ' They are based on the My Neighbourhood unit.', flaw: false,
         badMsg: 'Curriculum context is useful. That is a good detail to include.' }
     ],
-    fixedText: '"Hi Claude, I would like you to update any outdated cultural references in these flashcards for my Mandarin class and fix any spelling errors. Keep the layout and all other content the same. They are based on the My Neighbourhood unit."',
+    fixedText: '"Hi there, I would like you to update any outdated cultural references in these flashcards for my Mandarin class and fix any spelling errors. Keep the layout and all other content the same. They are based on the My Neighbourhood unit."',
     aiReply: 'I have updated the outdated cultural references and fixed the spelling errors in your flashcards. Everything else has been kept the same...'
   }
 ];
